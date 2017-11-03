@@ -1,0 +1,15 @@
+{
+  "name": "pirfecto",
+  "version": "1.0.0",
+  "description": "A Raspberry Pi-Powered RF Outlet Control Hub",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kyleflan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "jsmin": "^1.0.1"
+  }
+}

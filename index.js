@@ -73,7 +73,7 @@ and index_html. */
 	</body>
 	</html>`;
 
-	console.log('Initialized successfully.");
+	console.log('Initialized successfully.');
 }
 
 function get_outlet_index_by_id(id) {

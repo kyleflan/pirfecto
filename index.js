@@ -3,41 +3,30 @@ var jsmin = require('jsmin').jsmin;
 var fs = require('fs');
 var app = express();
 var rpi433 = require('rpi-433'),
-	//rfSniffer = rpi433.sniffer({
-		//pin: 2,
-		//debounceDelay: 500
-	//}),
 	rfEmitter = rpi433.emitter({
 		pin: 0,
 		pulseLength: 185
 	});
 
+// Set the HTTP port 
 var PORT=8888;
 
-
+// define global vars
 var outlet_file, json_str, outlets, index_html;
 
 function init() {
+/* Handle initialization of global vars: outlet_file, json_str, outlets 
+and index_html. */
 
-	/* Load outlets configuration */ 
+	// Load outlets configuration
 	outlet_file = fs.readFileSync('outlets.json', 'utf8'); 
 	json_str = jsmin(outlet_file.toString()); 
 	outlets = JSON.parse(json_str); 
 	outlets = outlets.filter(function(outlet) {
 		return outlet.enabled	
 	});
-	/*
-	// Make sure that array indeces are the outlet's ID
-	// specified in the config file and only pull in 
-	// enabled outlets
-	var outlets=[];
-	for (var i=0; i<outlets_tmp.length; i++) {
-		if (outlets_tmp[i].enabled) {
-			outlets[outlets_tmp[i].id] = outlets_tmp[i];
-		}
-	}
-	*/
-	/* Build our html */
+
+	// build HTML template
 	index_html = `
 	<html>
 	<head>
@@ -65,7 +54,7 @@ function init() {
 			</div>
 		</div>
 	`
-
+	// add row for each outlet
 	for (var i in outlets) {
 		index_html += '<div class="row"><div class="col-md-12 text-center"><h2>' + outlets[i].name + '</h2></div></div>';
 
@@ -83,8 +72,8 @@ function init() {
 	</div>
 	</body>
 	</html>`;
-	//console.log(index_html);
-	console.log('Parsed outlets configuration: ' + outlets); 
+
+	console.log('Initialized successfully.");
 }
 
 function get_outlet_index_by_id(id) {
@@ -94,8 +83,9 @@ function get_outlet_index_by_id(id) {
 }
 
 
-
 function send_code(outlet_id, signal) {
+/* Send the signal specified by signal to the outlet_id specified
+by outlet_id */
 	var code = 0;
 	var outlet_index = get_outlet_index_by_id(outlet_id);
 	if (signal == 'ON') {
@@ -105,24 +95,25 @@ function send_code(outlet_id, signal) {
 		signal = 'OFF';
 	}
 	return rfEmitter.sendCode(code)
+	/* Send the specified code and construct an HTML message element to be inserted
+	   into the web app page */
 		  .then(function(stdout) {
 			console.log('Code sent: ', stdout);
 			var div = '<div class="alert alert-success">';
 			div +=  "Successfully sent '" + signal + "' signal to outlet: " + outlets[outlet_index].name;
 			div += '</div>';
-			console.log(div);
 			return div;
 		  }, function(error) {
 			var div = '<div class="alert alert-danger">';
 			div +=  "Could not send '" + signal + "' signal to outlet: " + outlets[outlet_index].name + ". Error: " + error;
 			div += '</div>';
-			console.log(div);
 			return div;
 		  });
 }
 
 
-app.get("/", function(req, res) {
+// express route functions
+app.get("/", function(req, res) { // default function
 	init();
 	console.log('orig url: ' + req.originalUrl);
 	console.log(req.route.path);
@@ -130,25 +121,21 @@ app.get("/", function(req, res) {
 	//res.sendfile('temp-index.html');
 });
 
-app.get("/outlets", function(req, res) {
-	init();
+app.get("/outlets", function(req, res) { 
+/* Return outlet info. If an outlet_id is specified then return config info
+for that outlet. Otherwise return config info for all outlets */
+	init(); // get latest outlet config
 	if (req.query.outlet_id) {
-		////if (req.query.outlet_id in outlets) {
 		res.json(outlets[get_outlet_index_by_id(req.query.outlet_id)]);
-		////} else {
-			////res.send("outlet_id specified does not exist.");
-		////}
 	} else {
 		res.json(outlets);
 	}	
 });
 
-app.get("/control", function(req, res) {
-	init();
+app.get("/control", function(req, res) { // outlet control API
+	init(); // get latest outlet config
 	var msg = '';
-	console.log("g_o_i_b_id: " + get_outlet_index_by_id(req.query.outlet_id));
-	console.log("next: " + (! (typeof get_outlet_index_by_id(req.query.outlet_id) === 'undefined')));
-	if (req.query.signal == 'ON' 
+	if (req.query.signal == 'ON'  // send ON code
 		&& (! (typeof get_outlet_index_by_id(req.query.outlet_id) === 'undefined'))
 		) {
 			let promise = send_code(req.query.outlet_id, req.query.signal);
@@ -159,7 +146,7 @@ app.get("/control", function(req, res) {
 					
 				});
 		});
-	} else if (req.query.signal == 'OFF' 
+	} else if (req.query.signal == 'OFF'  // send OFF code
 		&& (! (typeof get_outlet_index_by_id(req.query.outlet_id) === 'undefined'))
 		){
 			let promise = send_code(req.query.outlet_id, req.query.signal);
@@ -170,7 +157,7 @@ app.get("/control", function(req, res) {
 					
 				});
 		});
-	} else {
+	} else { // didn't receive an ON or OFF signal, so return error
 		msg ='<div class="alert alert-danger">';
 		msg +=  "Invalid arguments.";
 		msg += '</div>';
@@ -178,6 +165,7 @@ app.get("/control", function(req, res) {
 	}
 });
 
+// run app
 app.listen(PORT, function() {
 	console.log("Listening on " + PORT);
 });

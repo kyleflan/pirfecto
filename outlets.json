@@ -1,0 +1,75 @@
+[{
+		// id is a user-defined unique integer id for this outlet
+		"id": 0,
+		// name is used to display a name on the web app webpage
+        "name": "Alpha",
+		// remote_button_number is mainly for reference to know which
+		// button on the remote this outlet corresponds to
+        "remote_button_number": 1,
+		// ON is the RF code to send to turn this outlet on
+        "ON": 4461875,
+		// OFF is same as above but for off
+        "OFF": 4461884,
+		// only enabled outlets will show on the app webpage
+		"enabled": true
+    }, {
+		"id": 1,
+        "name": "Bravo",
+        "remote_button_number": 2,
+        "ON": 4462019,
+        "OFF": 4462028,
+		"enabled": true
+    }, {
+		"id": 2,
+        "name": "Charlie",
+        "remote_button_number": 3,
+        "ON": 4462339,
+        "OFF": 4462348,
+		"enabled": true
+    }, {
+		"id": 3,
+        "name": "Delta",
+        "remote_button_number": 4,
+        "ON": 4463875,
+        "OFF": 4463884,
+		"enabled": false
+    }, {
+		"id": 4,
+        "name": "Echo",
+        "remote_button_number": 1,
+		"description": "0313-1",
+        "ON": 1070387,
+        "OFF": 1070396,
+		"enabled": true
+    }, {
+		"id": 5,
+        "name": "Foxtrot",
+		"description": "0313-2",
+        "remote_button_number": 2,
+        "ON": 1070531,
+        "OFF": 1070540,
+		"enabled": true
+    }, {
+		"id": 6,
+        "name": "Golf",
+        "remote_button_number": 3,
+		"description": "0313-3",
+        "ON": 1070851,
+        "OFF": 1070860,
+		"enabled": true
+    }, {
+		"id": 7,
+        "name": "All (System 1)",
+        "remote_button_number": 5,
+        "ON": 4470019,
+        "OFF": 4470028,
+		"enabled": true
+    }, {
+		"id": 8,
+        "name": "All (System 2)",
+        "remote_button_number": 5,
+        "ON": 1078531,
+        "OFF": 1078540,
+		"enabled": true
+}]
+

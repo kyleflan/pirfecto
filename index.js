@@ -41,10 +41,10 @@ and index_html. */
 	<body>
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-3 col-md-offset-3 text-center">
+			<div class="col-md-3 col-md-offset-3 text-center">
 				<h3>RF Control Center</h3>
 			</div>
-			<div class="col-xs-3 text-center">
+			<div class="col-md-3 text-center">
 				<h3><a href="/">Refresh</a></h3>
 			</div>
 		</div>

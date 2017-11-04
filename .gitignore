@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# don't track wiringPi or rfoutlet
+wiringPi/
+rfoutlet/

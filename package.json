@@ -9,8 +9,8 @@
   "author": "kyleflan",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2",
+    "express": "^4.17.1",
     "jsmin": "^1.0.1",
-    "rpi-433": "^2.1.0"
+    "rpi-433-v3": "^1.2.0"
   }
 }

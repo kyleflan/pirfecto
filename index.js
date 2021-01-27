@@ -2,10 +2,11 @@ var express = require("express");
 var jsmin = require('jsmin').jsmin;
 var fs = require('fs');
 var app = express();
-var rpi433 = require('rpi-433'),
+var rpi433 = require('rpi-433-v3'),
 	rfEmitter = rpi433.emitter({
 		pin: 0,
-		pulseLength: 185
+		pulseLength: 185,
+		protocol: 1
 	});
 
 // Set the HTTP port 
@@ -73,7 +74,7 @@ and index_html. */
 	</body>
 	</html>`;
 
-	console.log('Initialized successfully.");
+	console.log('Initialized successfully.');
 }
 
 function get_outlet_index_by_id(id) {

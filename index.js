@@ -15,18 +15,7 @@ var PORT=8888;
 // define global vars
 var outlet_file, json_str, outlets, index_html;
 
-function init() {
-/* Handle initialization of global vars: outlet_file, json_str, outlets 
-and index_html. */
-
-	// Load outlets configuration
-	outlet_file = fs.readFileSync('outlets.json', 'utf8'); 
-	json_str = jsmin(outlet_file.toString()); 
-	outlets = JSON.parse(json_str); 
-	outlets = outlets.filter(function(outlet) {
-		return outlet.enabled	
-	});
-
+function get_index(with_header=true) {
 	// build HTML template
 	index_html = `
 	<html>
@@ -41,19 +30,26 @@ and index_html. */
 	</head>
 	<body>
 	<div class="container">
-		<div class="row">
-			<div class="col-md-3 col-md-offset-3 text-center">
-				<h3>RF Control Center</h3>
+	`
+	if (with_header) {
+		index_html += `
+			<div class="row" id="header">
+				<div class="col-md-3 col-md-offset-3 text-center">
+					<h3>RF Control Center</h3>
+				</div>
+				<div class="col-md-3 text-center">
+					<h3><a href="/">Refresh</a></h3>
+				</div>
 			</div>
-			<div class="col-md-3 text-center">
-				<h3><a href="/">Refresh</a></h3>
-			</div>
-		</div>
+		`
+	}
+	index_html += `
 		<div class="row">
 			<div class="col-sm-6 col-md-offset-3">
 			<!--msgholder-->
 			</div>
 		</div>
+	<div id="outlets">
 	`
 	// add row for each outlet
 	for (var i in outlets) {
@@ -71,8 +67,28 @@ and index_html. */
 
 	index_html += `
 	</div>
+	</div>
 	</body>
 	</html>`;
+
+	return index_html;
+
+}
+
+function init() {
+/* Handle initialization of global vars: outlet_file, json_str, outlets 
+and index_html. */
+
+	// Load outlets configuration
+	outlet_file = fs.readFileSync('outlets.json', 'utf8'); 
+	json_str = jsmin(outlet_file.toString()); 
+	outlets = JSON.parse(json_str); 
+	outlets = outlets.filter(function(outlet) {
+		return outlet.enabled	
+	});
+
+	index_html = get_index();
+
 
 	console.log('Initialized successfully.');
 }
@@ -118,7 +134,11 @@ app.get("/", function(req, res) { // default function
 	init();
 	console.log('orig url: ' + req.originalUrl);
 	console.log(req.route.path);
-	res.send(index_html);
+	with_header = true;
+	if (req.query.no_headers) {
+		with_header = false;
+	}
+	res.send(get_index(with_header));
 	//res.sendfile('temp-index.html');
 });
 

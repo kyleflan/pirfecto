@@ -15,8 +15,15 @@ var PORT=8888;
 // define global vars
 var outlet_file, json_str, outlets, index_html;
 
-function get_index(with_header=true) {
+function get_index(req) {
 	// build HTML template
+	if (req) {
+		var with_header = !req.query.no_headers;
+	} else {
+		var with_header = true;
+	}
+
+	var no_header_arg = (with_header) ? '' : '&no_headers=true';
 	index_html = `
 	<html>
 	<head>
@@ -58,8 +65,8 @@ function get_index(with_header=true) {
 		index_html += '<div class="row">';
 		index_html += '<div class="col-md-6 col-md-offset-3">';
 		index_html += '<div class="btn-group btn-group-justified">';
-		index_html += '<a href="./control?outlet_id=' + outlets[i].id + '&signal=ON" class="btn btn-success" role="button">ON</a>';
-		index_html += '<a href="./control?outlet_id=' + outlets[i].id + '&signal=OFF" class="btn btn-danger" role="button">OFF</a>';
+		index_html += '<a href="./control?outlet_id=' + outlets[i].id + '&signal=ON' + no_header_arg + '" class="btn btn-success" role="button">ON</a>';
+		index_html += '<a href="./control?outlet_id=' + outlets[i].id + '&signal=OFF' + no_header_arg + '" class="btn btn-danger" role="button">OFF</a>';
 		index_html += '</div>';
 		index_html += '</div>';
 		index_html += '</div>';
@@ -138,7 +145,7 @@ app.get("/", function(req, res) { // default function
 	if (req.query.no_headers) {
 		with_header = false;
 	}
-	res.send(get_index(with_header));
+	res.send(get_index(req));
 	//res.sendfile('temp-index.html');
 });
 
@@ -163,7 +170,7 @@ app.get("/control", function(req, res) { // outlet control API
 			setTimeout(function() {
 				promise.then(function(value) {
 					msg = value;
-					res.send(index_html.replace('<!--msgholder-->', msg));
+					res.send(get_index(req).replace('<!--msgholder-->', msg));
 					
 				});
 		});
@@ -174,7 +181,7 @@ app.get("/control", function(req, res) { // outlet control API
 			setTimeout(function() {
 				promise.then(function(value) {
 					msg = value;
-					res.send(index_html.replace('<!--msgholder-->', msg));
+					res.send(get_index(req).replace('<!--msgholder-->', msg));
 					
 				});
 		});
@@ -182,7 +189,7 @@ app.get("/control", function(req, res) { // outlet control API
 		msg ='<div class="alert alert-danger">';
 		msg +=  "Invalid arguments.";
 		msg += '</div>';
-		res.send(index_html.replace('<!--msgholder-->', msg));
+		res.send(get_index(req).replace('<!--msgholder-->', msg));
 	}
 });
 
